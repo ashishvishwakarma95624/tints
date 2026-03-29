@@ -17,7 +17,7 @@
   .label-field  { @apply block text-[10.5px] font-bold tracking-[.16em] uppercase text-gray-400 mb-1.5; }
   .section-tag  { @apply inline-flex items-center gap-2 text-[11px] font-bold tracking-[.2em] uppercase text-gold mb-3; }
   .section-tag::before { content:''; @apply inline-block w-5 h-px bg-gold; }
-  .page-hero    { @apply pt-28 pb-16 bg-gradient-to-br from-gray-50 to-gray-100 border-b border-gray-200; }
+  .page-hero { @apply pt-28 pb-16 bg-[#05070B] border-b border-gray-800; }
 }
 
 /* Marquee */

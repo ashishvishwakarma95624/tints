@@ -95,20 +95,14 @@ export default function Contact() {
 
   return (
     <>
-      <PageHero
-        label="Get In Touch"
-        title="Let's <em class='text-gold not-italic'>Talk</em>"
-        subtitle="We're here Monday–Saturday 8AM–6PM. Every message gets a personal response."
-        breadcrumbs={['Home', 'Contact']}
-      />
-
-      <section className="py-24">
+      {/* Contact Section */}
+      <section className="py-24 bg-[#05070B]">
         <div className="max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-2 gap-20">
           {/* INFO COLUMN */}
           <div>
-            <div className="section-tag">Find Us</div>
-            <h2 className="font-serif font-light text-4xl mb-10">
-              Visit Our <em className="text-gold not-italic">Shop</em>
+            <div className="section-tag text-[#009fff]">Find Us</div>
+            <h2 className="font-serif font-light text-4xl mb-10 text-white">
+              Visit Our <em className="text-[#009fff] not-italic">Shop</em>
             </h2>
 
             <div className="space-y-7 mb-12">
@@ -119,19 +113,41 @@ export default function Contact() {
                 [Clock, 'Hours', 'Mon–Fri: 8AM – 6PM\nSaturday: 9AM – 4PM\nSunday: Closed'],
               ].map(([Icon, label, val]) => (
                 <div key={label} className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
-                    <Icon size={17} className="text-gold" />
+                  <div className="w-10 h-10 rounded-full bg-[#0F1726] flex items-center justify-center shrink-0 border border-[#009fff]/20">
+                    <Icon size={17} className="text-[#009fff]" />
                   </div>
                   <div>
-                    <div className="text-[10.5px] font-bold tracking-[.18em] uppercase text-gray-400 mb-1">
+                    <div className="text-[10.5px] font-bold tracking-[.18em] uppercase text-[#f7f8f9] mb-1">
                       {label}
                     </div>
-                    <div className="text-[14px] text-gray-700 leading-relaxed font-light whitespace-pre-line">
+                    <div className="text-[14px] text-[#f7f8f9] leading-relaxed font-light whitespace-pre-line">
                       {val}
                     </div>
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Business Hours Card */}
+            <div className="bg-[#0F1726] rounded-xl p-6 border border-[#009fff]/10">
+              <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <Clock size={18} className="text-[#009fff]" />
+                Business Hours
+              </h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between text-[#f7f8f9]">
+                  <span>Monday – Friday</span>
+                  <span className="text-white font-medium">8AM – 6PM</span>
+                </div>
+                <div className="flex justify-between text-[#f7f8f9]">
+                  <span>Saturday</span>
+                  <span className="text-white font-medium">9AM – 4PM</span>
+                </div>
+                <div className="flex justify-between text-[#f7f8f9]">
+                  <span>Sunday</span>
+                  <span className="text-[#009fff] font-medium">Closed</span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -139,38 +155,38 @@ export default function Contact() {
           <div>
             {done ? (
               /* Success state */
-              <div className="text-center py-16">
-                <CheckCircle size={68} className="text-gold mx-auto mb-5" />
-                <h3 className="font-serif text-3xl mb-3">Message Sent!</h3>
-                <p className="text-gray-500 font-light mb-2">
-                  A confirmation has been sent to <strong>{form.email}</strong>.
+              <div className="text-center py-16 bg-[#0F1726] rounded-2xl border border-[#009fff]/10">
+                <CheckCircle size={68} className="text-[#009fff] mx-auto mb-5" />
+                <h3 className="font-serif text-3xl mb-3 text-white">Message Sent!</h3>
+                <p className="text-[#f7f8f9] font-light mb-2">
+                  A confirmation has been sent to <strong className="text-white">{form.email}</strong>.
                 </p>
-                <p className="text-gray-500 font-light mb-8">
+                <p className="text-[#f7f8f9] font-light mb-8">
                   We'll get back to you within a few hours.
                 </p>
                 <button
                   onClick={resetForm}
-                  className="btn-outline"
+                  className="border border-[#009fff] text-[#009fff] px-8 py-3 rounded-lg text-sm font-semibold hover:bg-[#009fff] hover:text-[#05070B] transition-all"
                 >
                   Send Another Message
                 </button>
               </div>
             ) : (
               <>
-                <div className="section-tag">Send a Message</div>
-                <h2 className="font-serif font-light text-4xl mb-10">
-                  Quick <em className="text-gold not-italic">Enquiry</em>
+                <div className="section-tag text-[#009fff]">Send a Message</div>
+                <h2 className="font-serif font-light text-4xl mb-10 text-white">
+                  Quick <em className="text-[#009fff] not-italic">Enquiry</em>
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="label-field">
+                      <label className="label-field text-[#f7f8f9]">
                         Full Name <span className="text-red-400">*</span>
                       </label>
                       <input
                         required
-                        className="input-field"
+                        className="w-full bg-[#0F1726] border border-[#009fff]/20 rounded-lg px-4 py-3 text-white placeholder-[#f7f8f9]/50 focus:border-[#009fff] focus:outline-none transition-colors"
                         placeholder="John Doe"
                         value={form.name}
                         onChange={handleChange('name')}
@@ -178,13 +194,13 @@ export default function Contact() {
                       />
                     </div>
                     <div>
-                      <label className="label-field">
+                      <label className="label-field text-[#f7f8f9]">
                         Email Address <span className="text-red-400">*</span>
                       </label>
                       <input
                         required
                         type="email"
-                        className="input-field"
+                        className="w-full bg-[#0F1726] border border-[#009fff]/20 rounded-lg px-4 py-3 text-white placeholder-[#f7f8f9]/50 focus:border-[#009fff] focus:outline-none transition-colors"
                         placeholder="you@email.com"
                         value={form.email}
                         onChange={handleChange('email')}
@@ -195,10 +211,10 @@ export default function Contact() {
 
                   <div className="grid sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="label-field">Phone Number</label>
+                      <label className="label-field text-[#f7f8f9]">Phone Number</label>
                       <input
                         type="tel"
-                        className="input-field"
+                        className="w-full bg-[#0F1726] border border-[#009fff]/20 rounded-lg px-4 py-3 text-white placeholder-[#f7f8f9]/50 focus:border-[#009fff] focus:outline-none transition-colors"
                         placeholder="(555) 000-0000"
                         value={form.phone}
                         onChange={handleChange('phone')}
@@ -206,28 +222,28 @@ export default function Contact() {
                       />
                     </div>
                     <div>
-                      <label className="label-field">Subject</label>
+                      <label className="label-field text-[#f7f8f9]">Subject</label>
                       <select
-                        className="input-field"
+                        className="w-full bg-[#0F1726] border border-[#009fff]/20 rounded-lg px-4 py-3 text-white focus:border-[#009fff] focus:outline-none transition-colors"
                         value={form.subject}
                         onChange={handleChange('subject')}
                         disabled={loading}
                       >
                         {SUBJECTS.map(s => (
-                          <option key={s}>{s}</option>
+                          <option key={s} className="bg-[#0F1726]">{s}</option>
                         ))}
                       </select>
                     </div>
                   </div>
 
                   <div>
-                    <label className="label-field">
+                    <label className="label-field text-[#f7f8f9]">
                       Message <span className="text-red-400">*</span>
                     </label>
                     <textarea
                       required
                       rows="5"
-                      className="input-field resize-none"
+                      className="w-full bg-[#0F1726] border border-[#009fff]/20 rounded-lg px-4 py-3 text-white placeholder-[#f7f8f9]/50 focus:border-[#009fff] focus:outline-none transition-colors resize-none"
                       placeholder="How can we help you?"
                       value={form.message}
                       onChange={handleChange('message')}
@@ -238,7 +254,7 @@ export default function Contact() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="btn-primary w-full justify-center py-4 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full bg-[#009fff] text-[#05070B] py-4 rounded-lg text-sm font-semibold hover:bg-[#007BFF] transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center"
                   >
                     {loading ? (
                       <>
@@ -250,7 +266,7 @@ export default function Contact() {
                     )}
                   </button>
 
-                  <p className="text-center text-[12px] text-gray-400">
+                  <p className="text-center text-[12px] text-[#f7f8f9]">
                     🔒 Your information is private and never shared with third parties.
                   </p>
                 </form>
@@ -260,18 +276,53 @@ export default function Contact() {
         </div>
       </section>
 
-      <section className="mb-2">
-        <div className="bg-gray-100 rounded-2xl flex items-center justify-center border border-gray-200 overflow-hidden">
-          <iframe
-            src="https://www.google.com/maps?q=Canada&output=embed"
-            width="100%"
-            height="500px"
-            style={{ border: 0 }}
-            allowFullScreen=""
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Canada Map"
-          />
+      {/* Map Section */}
+      <section className="bg-[#0A0F1C] py-24">
+        <div className="max-w-7xl mx-auto px-5 lg:px-8">
+          <div className="text-center mb-10">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <span className="w-8 h-px bg-[#009fff]" />
+              <span className="text-[11px] font-bold tracking-[.2em] uppercase text-[#009fff]">Our Location</span>
+              <span className="w-8 h-px bg-[#009fff]" />
+            </div>
+            <h2 className="font-serif font-light text-4xl text-white">
+              Find Us in <em className="text-[#009fff] not-italic">Windsor-Essex</em>
+            </h2>
+          </div>
+          
+          <div className="bg-[#0F1726] rounded-2xl overflow-hidden border border-[#009fff]/10">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d191654.23321510364!2d-83.15983195!3d42.2318305!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x883b2b0c1e5b5b5b%3A0x5b5b5b5b5b5b5b5b!2sWindsor%2C%20ON%2C%20Canada!5e0!3m2!1sen!2sus!4v1620000000000!5m2!1sen!2sus"
+              width="100%"
+              height="500px"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Windsor-Essex Map"
+              className="filter brightness-90"
+            />
+          </div>
+          
+          {/* Service Areas */}
+          <div className="grid md:grid-cols-2 gap-6 mt-8">
+            <div className="bg-[#0F1726] rounded-xl p-6 border border-[#009fff]/10">
+              <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <MapPin size={18} className="text-[#009fff]" />
+                Windsor Location
+              </h3>
+              <p className="text-[#f7f8f9] text-sm mb-2">123 Riverside Drive</p>
+              <p className="text-[#f7f8f9] text-sm">Windsor, ON N9A 1A2</p>
+            </div>
+            <div className="bg-[#0F1726] rounded-xl p-6 border border-[#009fff]/10">
+              <h3 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <MapPin size={18} className="text-[#009fff]" />
+                Essex Location
+              </h3>
+              <p className="text-[#f7f8f9] text-sm mb-2">456 Talbot Street</p>
+              <p className="text-[#f7f8f9] text-sm">Essex, ON N8M 1C8</p>
+            </div>
+          </div>
         </div>
       </section>
     </>

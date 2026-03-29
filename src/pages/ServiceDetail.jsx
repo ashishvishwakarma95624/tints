@@ -1,20 +1,26 @@
 import { useParams, Link } from 'react-router-dom';
-import { Check, ArrowRight, ArrowLeft, Phone } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Check, ArrowRight, ArrowLeft, Phone, Clock, Shield, Award, Zap, FileText, Users } from 'lucide-react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SERVICES } from '../data';
 
-// Per-service accent colours
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger);
+
+// Per-service accent colours - updated to use your color scheme
 const ACCENTS = {
-  'window-tint':          { from:'from-sky-950',    to:'to-sky-800',    light:'bg-sky-50',    border:'border-sky-200',    text:'text-sky-700',    dot:'bg-sky-500' },
-  'paint-protection-film':{ from:'from-slate-950',  to:'to-slate-800',  light:'bg-slate-50',  border:'border-slate-200',  text:'text-slate-700',  dot:'bg-slate-500' },
-  'ceramic-coating':      { from:'from-amber-950',  to:'to-amber-800',  light:'bg-amber-50',  border:'border-amber-200',  text:'text-amber-700',  dot:'bg-amber-500' },
-  'vehicle-wrap':         { from:'from-purple-950', to:'to-purple-800', light:'bg-purple-50', border:'border-purple-200', text:'text-purple-700', dot:'bg-purple-500' },
-  'car-detailing':        { from:'from-emerald-950',to:'to-emerald-800',light:'bg-emerald-50',border:'border-emerald-200',text:'text-emerald-700',dot:'bg-emerald-500' },
-  'commercial-tints':     { from:'from-teal-950',   to:'to-teal-800',   light:'bg-teal-50',   border:'border-teal-200',   text:'text-teal-700',   dot:'bg-teal-500' },
-  'office-signs':         { from:'from-orange-950', to:'to-orange-800', light:'bg-orange-50', border:'border-orange-200', text:'text-orange-700', dot:'bg-orange-500' },
-  'tire-swap':            { from:'from-zinc-900',   to:'to-zinc-700',   light:'bg-zinc-50',   border:'border-zinc-200',   text:'text-zinc-700',   dot:'bg-zinc-500' },
-  '3d-printing':          { from:'from-cyan-950',   to:'to-cyan-800',   light:'bg-cyan-50',   border:'border-cyan-200',   text:'text-cyan-700',   dot:'bg-cyan-500' },
-  'handyman':             { from:'from-red-950',    to:'to-red-800',    light:'bg-red-50',    border:'border-red-200',    text:'text-red-700',    dot:'bg-red-500' },
-  'custom-kit':           { from:'from-indigo-950', to:'to-indigo-800', light:'bg-indigo-50', border:'border-indigo-200', text:'text-indigo-700', dot:'bg-indigo-500' },
+  'window-tint':          { from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
+  'paint-protection-film':{ from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
+  'ceramic-coating':      { from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
+  'vehicle-wrap':         { from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
+  'car-detailing':        { from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
+  'commercial-tints':     { from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
+  'office-signs':         { from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
+  'tire-swap':            { from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
+  '3d-printing':          { from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
+  'handyman':             { from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
+  'custom-kit':           { from:'from-[#009fff]/20', to:'to-[#007BFF]/20', light:'bg-[#009fff]/10', border:'border-[#009fff]/20', text:'text-[#009fff]', dot:'bg-[#009fff]' },
 };
 
 // Service-specific FAQs
@@ -96,78 +102,244 @@ const DEFAULT_FAQS = [
 const fmt = (price, unit) =>
   unit ? `$${Number(price).toFixed(2)}${unit}` : `$${Number(price).toLocaleString()}`;
 
-function FaqItem({ q, a }) {
-  const [open, setOpen] = React.useState(false);
+function FaqItem({ q, a, index }) {
+  const [open, setOpen] = useState(false);
+  const faqRef = useRef(null);
+
+  useEffect(() => {
+    gsap.from(faqRef.current, {
+      scrollTrigger: {
+        trigger: faqRef.current,
+        start: "top 85%",
+        end: "bottom 20%",
+        toggleActions: "play none none none"
+      },
+      y: 20,
+      opacity: 0,
+      duration: 0.4,
+      delay: index * 0.1,
+      ease: "power2.out"
+    });
+  }, [index]);
+
   return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden">
-      <button onClick={() => setOpen(v => !v)}
-        className="w-full px-6 py-4 flex items-center justify-between text-left gap-4 hover:bg-gray-50 transition-colors">
-        <span className="font-semibold text-[14px]">{q}</span>
-        <span className="text-gold text-xl shrink-0 font-light">{open ? '−' : '+'}</span>
+    <div 
+      ref={faqRef} 
+      className="bg-[#0F1726] border border-[#009fff]/10 rounded-xl overflow-hidden hover:border-[#009fff]/30 transition-all"
+    >
+      <button 
+        onClick={() => setOpen(v => !v)}
+        className="w-full px-6 py-4 flex items-center justify-between text-left gap-4 hover:bg-[#0A0F1C] transition-colors"
+      >
+        <span className="font-semibold text-[15px] text-white">{q}</span>
+        <span className={`text-[#009fff] text-2xl shrink-0 transition-transform duration-300 ${open ? 'rotate-180' : ''}`}>
+          {open ? '−' : '+'}
+        </span>
       </button>
-      {open && <p className="px-6 pb-5 text-[13.5px] text-gray-500 leading-relaxed font-light">{a}</p>}
+      
+      {/* Answer section */}
+      {open && (
+        <div className="px-6 pb-5 pt-3 border-t border-[#009fff]/10">
+          <p className="text-[14px] text-[#f7f8f9] leading-relaxed font-light">{a}</p>
+        </div>
+      )}
     </div>
   );
 }
 
-import React from 'react';
-
 export default function ServiceDetail() {
-  const { slug }  = useParams();
-  const service   = SERVICES.find(s => s.slug === slug);
-  const acc       = service ? (ACCENTS[slug] || ACCENTS['window-tint']) : null;
-  const faqs      = FAQS[slug] || DEFAULT_FAQS;
-  const related   = service
+  const { slug } = useParams();
+  const service = SERVICES.find(s => s.slug === slug);
+  const acc = service ? (ACCENTS[slug] || ACCENTS['window-tint']) : null;
+  const faqs = FAQS[slug] || DEFAULT_FAQS;
+  const related = service
     ? SERVICES.filter(s => s.slug !== slug).slice(0, 6)
     : [];
+  
+  const heroRef = useRef(null);
+  const contentRef = useRef(null);
+  const plansRef = useRef(null);
+  const relatedRef = useRef(null);
+  const ctaRef = useRef(null);
+  const faqHeaderRef = useRef(null);
+
+  useEffect(() => {
+    if (!service) return;
+
+    const ctx = gsap.context(() => {
+      // Hero animation
+      gsap.from(heroRef.current?.children || [], {
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.15,
+        ease: "power2.out",
+        delay: 0.2
+      });
+
+      // Content sections animation
+      gsap.from('.content-section', {
+        scrollTrigger: {
+          trigger: contentRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none none"
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.2,
+        ease: "power2.out"
+      });
+
+      // FAQ header animation
+      gsap.from(faqHeaderRef.current, {
+        scrollTrigger: {
+          trigger: faqHeaderRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none none"
+        },
+        y: 20,
+        opacity: 0,
+        duration: 0.5,
+        ease: "power2.out"
+      });
+
+      // Benefits animation
+      gsap.from('.benefit-item', {
+        scrollTrigger: {
+          trigger: contentRef.current,
+          start: "top 70%",
+          end: "bottom 30%",
+          toggleActions: "play none none none"
+        },
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "back.out(1.2)"
+      });
+
+      // Process steps animation
+      gsap.from('.process-step', {
+        scrollTrigger: {
+          trigger: contentRef.current,
+          start: "top 60%",
+          end: "bottom 40%",
+          toggleActions: "play none none none"
+        },
+        x: -30,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.15,
+        ease: "power2.out"
+      });
+
+      // Pricing plans animation
+      gsap.from('.plan-card', {
+        scrollTrigger: {
+          trigger: plansRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none none"
+        },
+        scale: 0.9,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.15,
+        ease: "back.out(1.2)"
+      });
+
+      // Related services animation
+      gsap.from('.related-item', {
+        scrollTrigger: {
+          trigger: relatedRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none none"
+        },
+        x: -20,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "power2.out"
+      });
+
+      // CTA animation
+      gsap.from(ctaRef.current, {
+        scrollTrigger: {
+          trigger: ctaRef.current,
+          start: "top 80%",
+          end: "bottom 20%",
+          toggleActions: "play none none none"
+        },
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        ease: "power2.out"
+      });
+    }, [heroRef, contentRef, plansRef, relatedRef, ctaRef, faqHeaderRef]);
+
+    return () => {
+      ctx.revert();
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, [service]);
 
   if (!service) return (
-    <div className="pt-24 text-center py-20">
-      <div className="text-6xl mb-5">🔍</div>
-      <h2 className="font-serif text-3xl mb-3">Service Not Found</h2>
-      <p className="text-gray-400 mb-8">We couldn't find that service. Browse all our services below.</p>
-      <Link to="/services" className="btn-primary">View All Services</Link>
+    <div className="pt-32 min-h-[60vh] bg-[#05070B] flex items-center justify-center">
+      <div className="text-center py-20 px-5">
+        <div className="text-8xl mb-6 opacity-30">🔍</div>
+        <h2 className="font-serif text-3xl text-white mb-3">Service Not Found</h2>
+        <p className="text-[#f7f8f9] mb-8">We couldn't find that service. Browse all our services below.</p>
+        <Link to="/services" className="inline-flex items-center gap-2 bg-[#009fff] text-[#05070B] px-6 py-3 rounded-lg text-sm font-bold uppercase tracking-widest hover:bg-[#007BFF] transition-all">
+          View All Services <ArrowRight size={16} />
+        </Link>
+      </div>
     </div>
   );
 
   return (
     <>
       {/* ── HERO ────────────────────────────────────────────────────────── */}
-      <section className={`pt-28 pb-0 bg-gradient-to-br ${acc.from} ${acc.to} text-white relative overflow-hidden`}>
+      <section ref={heroRef} className={`pt-28 pb-0 bg-gradient-to-br ${acc.from} ${acc.to} text-white relative overflow-hidden bg-[#0A0F1C]`}>
         {/* Decorative rings */}
-        <div className="absolute right-0 top-0 w-[600px] h-[600px] rounded-full border border-white/[.04] translate-x-1/3 -translate-y-1/4" />
-        <div className="absolute right-0 top-0 w-[400px] h-[400px] rounded-full border border-white/[.04] translate-x-1/3 -translate-y-1/4" />
-        <div className="absolute right-0 top-0 w-[200px] h-[200px] rounded-full border border-white/[.04] translate-x-1/3 -translate-y-1/4" />
+        <div className="absolute right-0 top-0 w-[600px] h-[600px] rounded-full border border-[#009fff]/10 translate-x-1/3 -translate-y-1/4" />
+        <div className="absolute right-0 top-0 w-[400px] h-[400px] rounded-full border border-[#009fff]/10 translate-x-1/3 -translate-y-1/4" />
+        <div className="absolute right-0 top-0 w-[200px] h-[200px] rounded-full border border-[#009fff]/10 translate-x-1/3 -translate-y-1/4" />
 
         <div className="max-w-7xl mx-auto px-5 lg:px-8 relative z-10">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-xs text-white/30 mb-10">
-            <Link to="/" className="hover:text-gold transition-colors">Home</Link>
+          <nav className="flex items-center gap-2 text-xs text-[#f7f8f9] mb-10">
+            <Link to="/" className="hover:text-[#009fff] transition-colors">Home</Link>
             <span>/</span>
-            <Link to="/services" className="hover:text-gold transition-colors">Services</Link>
+            <Link to="/services" className="hover:text-[#009fff] transition-colors">Services</Link>
             <span>/</span>
-            <span className="text-white/60">{service.name}</span>
+            <span className="text-white">{service.name}</span>
           </nav>
 
           <div className="grid lg:grid-cols-[1fr_340px] gap-12 pb-16">
             {/* Left */}
             <div>
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-4xl">
-                  {service.icon}
+                <div className="w-16 h-16 rounded-2xl bg-[#0F1726] border border-[#009fff]/20 flex items-center justify-center text-4xl">
+                  <span className="text-[#009fff]">{service.icon}</span>
                 </div>
-                <span className="text-[11px] font-bold tracking-[.2em] uppercase text-white/40 border border-white/20 px-3 py-1.5 rounded-full">
+                <span className="text-[11px] font-bold tracking-[.2em] uppercase text-[#009fff] border border-[#009fff]/30 px-3 py-1.5 rounded-full">
                   {service.category}
                 </span>
               </div>
-              <h1 className="font-serif font-light text-[clamp(2.8rem,5vw,4.8rem)] leading-tight mb-4">{service.name}</h1>
-              <p className="text-[1.1rem] text-white/45 italic font-light mb-6">{service.tagline}</p>
-              <p className="text-[15px] text-white/55 leading-relaxed font-light max-w-xl mb-8">{service.shortDesc}</p>
+              <h1 className="font-serif font-light text-[clamp(2.8rem,5vw,4.8rem)] leading-tight mb-4 text-white">{service.name}</h1>
+              <p className="text-[1.1rem] text-[#f7f8f9] italic font-light mb-6">{service.tagline}</p>
+              <p className="text-[15px] text-[#f7f8f9] leading-relaxed font-light max-w-xl mb-8">{service.shortDesc}</p>
               <div className="flex flex-wrap gap-3">
                 <Link to={`/contact?service=${encodeURIComponent(service.name)}`}
-                  className="btn-gold">Get a Free Quote <ArrowRight size={13} /></Link>
-                <a href="tel:5551234567"
-                  className="inline-flex items-center gap-2 border border-white/20 text-white text-[11px] font-bold uppercase tracking-[.15em] px-6 py-3.5 rounded hover:border-gold hover:text-gold transition-all">
+                  className="inline-flex items-center gap-2 bg-[#009fff] text-[#05070B] px-6 py-3.5 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-[#007BFF] transition-all">
+                  Get a Free Quote <ArrowRight size={13} />
+                </Link>
+                <a href="tel:+15551234567"
+                  className="inline-flex items-center gap-2 border border-[#009fff]/30 text-white text-xs font-bold uppercase tracking-widest px-6 py-3.5 rounded-lg hover:border-[#009fff] hover:text-[#009fff] transition-all">
                   <Phone size={13} /> Call Us
                 </a>
               </div>
@@ -181,8 +353,8 @@ export default function ServiceDetail() {
                 ['Process Steps', `${service.process.length} steps`],
                 ['Key Benefits', `${service.benefits.length} included`],
               ].map(([l,v]) => (
-                <div key={l} className="flex items-center justify-between bg-white/[.07] border border-white/10 rounded-xl px-5 py-3.5">
-                  <span className="text-[11.5px] text-white/40 uppercase tracking-widest font-semibold">{l}</span>
+                <div key={l} className="flex items-center justify-between bg-[#0F1726] border border-[#009fff]/10 rounded-xl px-5 py-3.5">
+                  <span className="text-[11.5px] text-[#f7f8f9] uppercase tracking-widest font-semibold">{l}</span>
                   <span className="font-serif text-xl font-semibold text-white">{v}</span>
                 </div>
               ))}
@@ -190,12 +362,12 @@ export default function ServiceDetail() {
           </div>
         </div>
 
-        {/* White wave bottom */}
-        <div className="h-8 bg-white" style={{ clipPath:'ellipse(55% 100% at 50% 100%)' }} />
+        {/* Wave bottom */}
+        <div className="h-8 bg-[#05070B]" style={{ clipPath:'ellipse(55% 100% at 50% 100%)' }} />
       </section>
 
       {/* ── MAIN CONTENT ────────────────────────────────────────────────── */}
-      <section className="py-20 bg-white">
+      <section ref={contentRef} className="py-20 bg-[#05070B]">
         <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <div className="grid lg:grid-cols-[1fr_360px] gap-16">
 
@@ -203,55 +375,53 @@ export default function ServiceDetail() {
             <div>
 
               {/* About */}
-              <div className="mb-16">
-                <div className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[.2em] uppercase text-gold mb-4">
-                  <span className="w-5 h-px bg-gold" />About This Service
+              <div className="content-section mb-16">
+                <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#009fff] mb-4">
+                  <span className="w-5 h-px bg-[#009fff]" />About This Service
                 </div>
-                <h2 className="font-serif font-light text-4xl mb-5">
-                  What Is <em className="text-gold not-italic">{service.name}?</em>
+                <h2 className="font-serif font-light text-4xl text-white mb-5">
+                  What Is <em className="text-[#009fff] not-italic">{service.name}?</em>
                 </h2>
-                <p className="text-[15px] text-gray-500 leading-relaxed font-light">{service.fullDesc}</p>
+                <p className="text-[15px] text-[#f7f8f9] leading-relaxed font-light">{service.fullDesc}</p>
               </div>
 
               {/* Benefits */}
-              <div className="mb-16">
-                <div className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[.2em] uppercase text-gold mb-4">
-                  <span className="w-5 h-px bg-gold" />What You Get
+              <div className="content-section mb-16">
+                <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#009fff] mb-4">
+                  <span className="w-5 h-px bg-[#009fff]" />What You Get
                 </div>
-                <h2 className="font-serif font-light text-4xl mb-7">
-                  Key <em className="text-gold not-italic">Benefits</em>
+                <h2 className="font-serif font-light text-4xl text-white mb-7">
+                  Key <em className="text-[#009fff] not-italic">Benefits</em>
                 </h2>
                 <div className="grid sm:grid-cols-2 gap-3">
                   {service.benefits.map((b, i) => (
-                    <div key={i}
-                      className={`flex items-start gap-3 p-4 rounded-xl border ${acc.light} ${acc.border} hover:shadow-sm transition-shadow`}>
-                      <div className={`w-6 h-6 rounded-full ${acc.dot} flex items-center justify-center shrink-0 mt-0.5`}>
-                        <Check size={12} className="text-white" />
+                    <div key={i} className="benefit-item flex items-start gap-3 p-4 rounded-xl bg-[#0F1726] border border-[#009fff]/10 hover:border-[#009fff]/30 transition-all">
+                      <div className="w-6 h-6 rounded-full bg-[#009fff] flex items-center justify-center shrink-0 mt-0.5">
+                        <Check size={12} className="text-[#05070B]" />
                       </div>
-                      <span className={`text-[13.5px] font-medium ${acc.text}`}>{b}</span>
+                      <span className="text-[13.5px] font-medium text-white">{b}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Process */}
-              <div className="mb-16">
-                <div className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[.2em] uppercase text-gold mb-4">
-                  <span className="w-5 h-px bg-gold" />How We Do It
+              <div className="content-section mb-16">
+                <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#009fff] mb-4">
+                  <span className="w-5 h-px bg-[#009fff]" />How We Do It
                 </div>
-                <h2 className="font-serif font-light text-4xl mb-7">
-                  Our <em className="text-gold not-italic">Process</em>
+                <h2 className="font-serif font-light text-4xl text-white mb-7">
+                  Our <em className="text-[#009fff] not-italic">Process</em>
                 </h2>
                 <div className="space-y-4">
                   {service.process.map((p, i) => (
-                    <div key={i}
-                      className="flex gap-5 p-6 bg-white border border-gray-200 rounded-2xl hover:border-gold/40 hover:shadow-md transition-all group">
-                      <div className="w-12 h-12 rounded-full bg-gold text-ink flex items-center justify-center font-serif font-semibold text-lg shrink-0">
+                    <div key={i} className="process-step flex gap-5 p-6 bg-[#0F1726] border border-[#009fff]/10 rounded-2xl hover:border-[#009fff]/30 hover:shadow-lg transition-all group">
+                      <div className="w-12 h-12 rounded-full bg-[#009fff] text-[#05070B] flex items-center justify-center font-serif font-semibold text-lg shrink-0">
                         {p.step}
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-semibold text-[15px] mb-1.5 group-hover:text-gold transition-colors">{p.title}</h4>
-                        <p className="text-[13.5px] text-gray-500 font-light leading-relaxed">{p.desc}</p>
+                        <h4 className="font-semibold text-[15px] text-white mb-1.5 group-hover:text-[#009fff] transition-colors">{p.title}</h4>
+                        <p className="text-[13.5px] text-[#f7f8f9] font-light leading-relaxed">{p.desc}</p>
                       </div>
                     </div>
                   ))}
@@ -259,15 +429,17 @@ export default function ServiceDetail() {
               </div>
 
               {/* FAQs */}
-              <div>
-                <div className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[.2em] uppercase text-gold mb-4">
-                  <span className="w-5 h-px bg-gold" />Common Questions
+              <div className="content-section">
+                <div ref={faqHeaderRef} className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#009fff] mb-4">
+                  <span className="w-5 h-px bg-[#009fff]" />Common Questions
                 </div>
-                <h2 className="font-serif font-light text-4xl mb-7">
-                  {service.name} <em className="text-gold not-italic">FAQs</em>
+                <h2 className="font-serif font-light text-4xl text-white mb-7">
+                  {service.name} <em className="text-[#009fff] not-italic">FAQs</em>
                 </h2>
-                <div className="space-y-3">
-                  {faqs.map(([q, a], i) => <FaqItem key={i} q={q} a={a} />)}
+                <div className="space-y-4">
+                  {faqs.map(([q, a], i) => (
+                    <FaqItem key={i} q={q} a={a} index={i} />
+                  ))}
                 </div>
               </div>
 
@@ -277,16 +449,16 @@ export default function ServiceDetail() {
             <div className="space-y-5 lg:sticky lg:top-24 self-start">
 
               {/* Book CTA */}
-              <div className={`bg-gradient-to-br ${acc.from} ${acc.to} text-white rounded-2xl p-7`}>
-                <div className="text-3xl mb-4">{service.icon}</div>
+              <div className="bg-[#0F1726] border border-[#009fff]/10 rounded-2xl p-7">
+                <div className="text-4xl mb-4 text-[#009fff]">{service.icon}</div>
                 <h3 className="font-serif text-xl font-semibold text-white mb-1">Book {service.name}</h3>
-                <p className="text-white/40 text-[13px] font-light mb-6">Get a free, no-pressure quote today.</p>
+                <p className="text-[#f7f8f9] text-[13px] font-light mb-6">Get a free, no-pressure quote today.</p>
 
-                <div className="space-y-2.5 mb-6 pb-5 border-b border-white/10">
+                <div className="space-y-2.5 mb-6 pb-5 border-b border-[#009fff]/10">
                   {service.plans.map((plan, i) => (
                     <div key={i} className="flex items-center justify-between">
-                      <span className="text-[12.5px] text-white/50">{plan.name}</span>
-                      <span className={`text-[13px] font-semibold ${plan.popular ? 'text-gold' : 'text-white/70'}`}>
+                      <span className="text-[12.5px] text-[#f7f8f9]">{plan.name}</span>
+                      <span className={`text-[13px] font-semibold ${plan.popular ? 'text-[#009fff]' : 'text-white'}`}>
                         {fmt(plan.price, plan.unit)}
                       </span>
                     </div>
@@ -295,19 +467,19 @@ export default function ServiceDetail() {
 
                 <Link
                   to={`/contact?service=${encodeURIComponent(service.name)}`}
-                  className="block text-center bg-gold text-ink text-[11px] font-bold uppercase tracking-[.18em] py-3.5 rounded-lg hover:bg-gold-dark transition-colors mb-3"
+                  className="block text-center bg-[#009fff] text-[#05070B] text-xs font-bold uppercase tracking-widest py-3.5 rounded-lg hover:bg-[#007BFF] transition-all mb-3"
                 >
                   Get a Free Quote →
                 </Link>
-                <a href="tel:5551234567"
-                  className="flex items-center justify-center gap-2 border border-white/15 text-white/50 text-[11px] font-semibold uppercase tracking-widest py-2.5 rounded-lg hover:border-gold hover:text-gold transition-all">
+                <a href="tel:+15551234567"
+                  className="flex items-center justify-center gap-2 border border-[#009fff]/20 text-[#f7f8f9] text-xs font-semibold uppercase tracking-widest py-2.5 rounded-lg hover:border-[#009fff] hover:text-[#009fff] transition-all">
                   <Phone size={12} /> (555) 123-4567
                 </a>
               </div>
 
               {/* Promise box */}
-              <div className="bg-white border border-gray-200 rounded-2xl p-6">
-                <h4 className="font-serif text-lg font-semibold mb-4">The Dsp-Tints Promise</h4>
+              <div className="bg-[#0F1726] border border-[#009fff]/10 rounded-2xl p-6">
+                <h4 className="font-serif text-lg font-semibold text-white mb-4">The Dsp-Tints Promise</h4>
                 {[
                   ['🏆','Premium materials only'],
                   ['✅','Satisfaction guarantee'],
@@ -316,21 +488,21 @@ export default function ServiceDetail() {
                   ['🛡️','Licensed & insured'],
                   ['🔁','Free re-dos if needed'],
                 ].map(([ico, lbl]) => (
-                  <div key={lbl} className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">
+                  <div key={lbl} className="flex items-center gap-3 py-2.5 border-b border-[#009fff]/10 last:border-0">
                     <span className="text-base">{ico}</span>
-                    <span className="text-[13px] text-gray-700 font-medium">{lbl}</span>
+                    <span className="text-[13px] text-[#f7f8f9] font-medium">{lbl}</span>
                   </div>
                 ))}
               </div>
 
               {/* Pricing link */}
               <Link to={`/pricing#${service.slug}`}
-                className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-2xl p-5 hover:border-gold hover:bg-gold/5 transition-all group">
+                className="flex items-center justify-between bg-[#0F1726] border border-[#009fff]/10 rounded-2xl p-5 hover:border-[#009fff] hover:bg-[#009fff]/5 transition-all group">
                 <div>
-                  <div className="text-[10.5px] font-bold tracking-widest uppercase text-gold mb-1">See Detailed Plans</div>
-                  <div className="text-[13.5px] font-semibold group-hover:text-gold transition-colors">Full Pricing Page</div>
+                  <div className="text-[10.5px] font-bold tracking-widest uppercase text-[#009fff] mb-1">See Detailed Plans</div>
+                  <div className="text-[13.5px] font-semibold text-white group-hover:text-[#009fff] transition-colors">Full Pricing Page</div>
                 </div>
-                <ArrowRight size={16} className="text-gray-300 group-hover:text-gold transition-colors" />
+                <ArrowRight size={16} className="text-[#f7f8f9] group-hover:text-[#009fff] transition-colors" />
               </Link>
 
             </div>
@@ -339,89 +511,89 @@ export default function ServiceDetail() {
       </section>
 
       {/* ── PRICING PLANS ───────────────────────────────────────────────── */}
-      <section className="py-20 bg-gray-50 border-t border-gray-200">
+      <section ref={plansRef} className="py-20 bg-[#0A0F1C] border-t border-[#009fff]/10">
         <div className="max-w-5xl mx-auto px-5">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 text-[11px] font-bold tracking-[.2em] uppercase text-gold mb-4">
-              <span className="w-5 h-px bg-gold" />Choose Your Plan
+            <div className="inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase text-[#009fff] mb-4">
+              <span className="w-5 h-px bg-[#009fff]" />Choose Your Plan
             </div>
-            <h2 className="font-serif font-light text-5xl">
-              {service.name} <em className="text-gold not-italic">Packages</em>
+            <h2 className="font-serif font-light text-5xl text-white">
+              {service.name} <em className="text-[#009fff] not-italic">Packages</em>
             </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
             {service.plans.map((plan, i) => (
-              <div key={i}
-                className={`relative rounded-2xl p-8 flex flex-col transition-shadow hover:shadow-xl ${
-                  plan.popular
-                    ? `bg-gradient-to-br ${acc.from} ${acc.to} text-white ring-2 ring-gold`
-                    : 'bg-white border border-gray-200'
-                }`}>
+              <div key={i} className="plan-card relative">
                 {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gold text-ink text-[10px] font-bold uppercase tracking-[.18em] px-5 py-1.5 rounded-full whitespace-nowrap shadow-lg">
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#009fff] text-[#05070B] text-[10px] font-bold uppercase tracking-widest px-5 py-1.5 rounded-full whitespace-nowrap shadow-lg z-10">
                     Most Popular
                   </div>
                 )}
-
-                {/* Plan header */}
-                <div className="mb-6">
-                  <div className={`text-[10.5px] font-bold tracking-[.18em] uppercase mb-1 ${plan.popular ? 'text-white/40' : 'text-gray-400'}`}>
-                    {service.name}
+                <div className={`relative rounded-2xl p-8 flex flex-col h-full transition-all hover:shadow-[0_0_30px_rgba(0,159,255,0.3)] ${
+                  plan.popular
+                    ? 'bg-[#0F1726] ring-2 ring-[#009fff]'
+                    : 'bg-[#0F1726] border border-[#009fff]/10'
+                }`}>
+                  {/* Plan header */}
+                  <div className="mb-6">
+                    <div className={`text-[10.5px] font-bold tracking-widest uppercase mb-1 text-[#009fff]`}>
+                      {service.name}
+                    </div>
+                    <h3 className={`font-serif text-2xl font-semibold mb-0.5 text-white`}>
+                      {plan.name}
+                    </h3>
                   </div>
-                  <h3 className={`font-serif text-2xl font-semibold mb-0.5 ${plan.popular ? 'text-white' : 'text-ink'}`}>
-                    {plan.name}
-                  </h3>
+
+                  {/* Price */}
+                  <div className="mb-7">
+                    <div className={`font-serif text-5xl font-light leading-none mb-1 text-white`}>
+                      {fmt(plan.price, plan.unit)}
+                    </div>
+                    <div className={`text-xs font-light text-[#f7f8f9]`}>
+                      {plan.unit ? 'per square foot' : 'starting price incl. labour'}
+                    </div>
+                  </div>
+
+                  {/* Features */}
+                  <ul className="space-y-3 flex-1 mb-8">
+                    {plan.features.map((f, fi) => (
+                      <li key={fi} className={`flex items-start gap-2.5 text-[13px] text-[#f7f8f9]`}>
+                        <Check size={13} className="text-[#009fff] mt-0.5 shrink-0" />{f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Link
+                    to={`/contact?service=${encodeURIComponent(service.name + ' — ' + plan.name)}`}
+                    className={`text-center text-xs font-bold uppercase tracking-widest py-3.5 rounded-xl block transition-all ${
+                      plan.popular
+                        ? 'bg-[#009fff] text-[#05070B] hover:bg-[#007BFF]'
+                        : 'border border-[#009fff] text-white hover:bg-[#009fff] hover:text-[#05070B]'
+                    }`}
+                  >
+                    Book {plan.name} →
+                  </Link>
                 </div>
-
-                {/* Price */}
-                <div className="mb-7">
-                  <div className={`font-serif text-5xl font-light leading-none mb-1 ${plan.popular ? 'text-white' : 'text-ink'}`}>
-                    {fmt(plan.price, plan.unit)}
-                  </div>
-                  <div className={`text-[12px] font-light ${plan.popular ? 'text-white/35' : 'text-gray-400'}`}>
-                    {plan.unit ? 'per square foot' : 'starting price incl. labour'}
-                  </div>
-                </div>
-
-                {/* Features */}
-                <ul className="space-y-3 flex-1 mb-8">
-                  {plan.features.map((f, fi) => (
-                    <li key={fi} className={`flex items-start gap-2.5 text-[13px] ${plan.popular ? 'text-white/75' : 'text-gray-600'}`}>
-                      <Check size={13} className="text-gold mt-0.5 shrink-0" />{f}
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  to={`/contact?service=${encodeURIComponent(service.name + ' — ' + plan.name)}`}
-                  className={`text-[11px] font-bold uppercase tracking-[.15em] py-3.5 rounded-xl text-center block transition-all ${
-                    plan.popular
-                      ? 'bg-gold text-ink hover:bg-gold-dark'
-                      : 'bg-ink text-white hover:bg-gold hover:text-ink'
-                  }`}
-                >
-                  Book {plan.name} →
-                </Link>
               </div>
             ))}
           </div>
 
-          <p className="text-center text-[12.5px] text-gray-400 mt-8">
+          <p className="text-center text-[12.5px] text-[#f7f8f9] mt-8">
             All prices are starting prices. Final quote confirmed before any work begins. No hidden fees.
           </p>
         </div>
       </section>
 
       {/* ── RELATED SERVICES ────────────────────────────────────────────── */}
-      <section className="py-16 bg-white border-t border-gray-100">
+      <section ref={relatedRef} className="py-16 bg-[#05070B] border-t border-[#009fff]/10">
         <div className="max-w-7xl mx-auto px-5 lg:px-8">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="font-serif font-light text-3xl">
-              More <em className="text-gold not-italic">Services</em>
+            <h2 className="font-serif font-light text-3xl text-white">
+              More <em className="text-[#009fff] not-italic">Services</em>
             </h2>
             <Link to="/services"
-              className="text-[12px] font-bold uppercase tracking-widest text-gold hover:underline flex items-center gap-1">
+              className="text-xs font-bold uppercase tracking-widest text-[#009fff] hover:text-[#007BFF] transition-colors flex items-center gap-1">
               View All <ArrowRight size={12} />
             </Link>
           </div>
@@ -429,15 +601,15 @@ export default function ServiceDetail() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {related.map(r => (
               <Link key={r.id} to={`/services/${r.slug}`}
-                className="flex items-center gap-4 p-4 bg-gray-50 border border-gray-200 rounded-xl hover:border-gold hover:bg-gold/5 hover:shadow-md transition-all group">
-                <div className="w-11 h-11 rounded-xl bg-white border border-gray-200 group-hover:border-gold/30 flex items-center justify-center text-xl shrink-0 transition-colors">
-                  {r.icon}
+                className="related-item flex items-center gap-4 p-4 bg-[#0F1726] border border-[#009fff]/10 rounded-xl hover:border-[#009fff] hover:shadow-lg transition-all group">
+                <div className="w-11 h-11 rounded-xl bg-[#0F1726] border border-[#009fff]/20 flex items-center justify-center text-xl shrink-0 group-hover:border-[#009fff] transition-colors">
+                  <span className="text-[#009fff]">{r.icon}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-[13px] group-hover:text-gold transition-colors">{r.name}</div>
-                  <div className="text-[11px] text-gray-400 font-light truncate">{r.tagline}</div>
+                  <div className="font-semibold text-[13px] text-white group-hover:text-[#009fff] transition-colors">{r.name}</div>
+                  <div className="text-[11px] text-[#f7f8f9] font-light truncate">{r.tagline}</div>
                 </div>
-                <ArrowRight size={13} className="text-gray-300 group-hover:text-gold transition-colors shrink-0" />
+                <ArrowRight size={13} className="text-[#f7f8f9] group-hover:text-[#009fff] transition-colors shrink-0" />
               </Link>
             ))}
           </div>
@@ -445,23 +617,23 @@ export default function ServiceDetail() {
       </section>
 
       {/* ── BOTTOM CTA ──────────────────────────────────────────────────── */}
-      <section className="py-20 bg-gold text-center">
+      <section ref={ctaRef} className="py-20 bg-[#0A0F1C] text-center">
         <div className="max-w-2xl mx-auto px-5">
-          <div className="text-5xl mb-5">{service.icon}</div>
-          <h2 className="font-serif font-light text-[clamp(2rem,4vw,3.2rem)] leading-tight mb-4">
-            Ready to Book <em className="not-italic">{service.name}?</em>
+          <div className="text-6xl mb-5 text-[#009fff]">{service.icon}</div>
+          <h2 className="font-serif font-light text-[clamp(2rem,4vw,3.2rem)] leading-tight text-white mb-4">
+            Ready to Book <em className="text-[#009fff] not-italic">{service.name}?</em>
           </h2>
-          <p className="text-ink/55 font-light text-[15px] mb-8">
+          <p className="text-[#f7f8f9] font-light text-[15px] mb-8">
             Get a free quote in minutes. Our team responds within a few hours.
           </p>
           <div className="flex gap-3 justify-center flex-wrap">
             <Link
               to={`/contact?service=${encodeURIComponent(service.name)}`}
-              className="bg-ink text-white text-[12px] font-bold uppercase tracking-[.15em] px-8 py-4 rounded hover:bg-white hover:text-ink transition-all">
+              className="bg-[#009fff] text-[#05070B] text-xs font-bold uppercase tracking-widest px-8 py-4 rounded-lg hover:bg-[#007BFF] transition-all">
               Get a Free Quote
             </Link>
             <Link to="/services"
-              className="inline-flex items-center gap-2 border border-ink/20 text-ink text-[12px] font-bold uppercase tracking-[.15em] px-8 py-4 rounded hover:border-ink transition-all">
+              className="inline-flex items-center gap-2 border border-[#009fff]/30 text-white text-xs font-bold uppercase tracking-widest px-8 py-4 rounded-lg hover:border-[#009fff] hover:text-[#009fff] transition-all">
               <ArrowLeft size={13} /> All Services
             </Link>
           </div>
